@@ -110,13 +110,11 @@ public class DataWritableReadSupport extends ReadSupport<ArrayWritable> {
             if (lowerCaseFileSchemaColumns.containsKey(col)) {
               typeListWanted.add(tableSchema.getType(lowerCaseFileSchemaColumns.get(col)));
             } else {
-              // should never occur?
-              String msg = "Column " + col + " at index " + idx + " does not exist in " +
-              lowerCaseFileSchemaColumns;
-              throw new IllegalStateException(msg);
+              // below allows schema evolution
+              typeListTable.add(new PrimitiveType(Repetition.OPTIONAL, PrimitiveTypeName.BINARY, col));
             }
           }
-	}
+        }
       }
       requestedSchemaByUser = resolveSchemaAccess(new MessageType(fileSchema.getName(),
               typeListWanted), fileSchema, configuration);
