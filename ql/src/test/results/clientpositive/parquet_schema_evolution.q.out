@@ -1,0 +1,112 @@
+PREHOOK: query: DROP TABLE parquet_schema_evolution_staging
+PREHOOK: type: DROPTABLE
+POSTHOOK: query: DROP TABLE parquet_schema_evolution_staging
+POSTHOOK: type: DROPTABLE
+PREHOOK: query: DROP TABLE parquet_schema_evolution
+PREHOOK: type: DROPTABLE
+POSTHOOK: query: DROP TABLE parquet_schema_evolution
+POSTHOOK: type: DROPTABLE
+PREHOOK: query: CREATE TABLE parquet_schema_evolution_staging (
+    id int,
+    str string,
+    part string
+) ROW FORMAT DELIMITED
+FIELDS TERMINATED BY '|'
+PREHOOK: type: CREATETABLE
+PREHOOK: Output: database:default
+POSTHOOK: query: CREATE TABLE parquet_schema_evolution_staging (
+    id int,
+    str string,
+    part string
+) ROW FORMAT DELIMITED
+FIELDS TERMINATED BY '|'
+POSTHOOK: type: CREATETABLE
+POSTHOOK: Output: database:default
+POSTHOOK: Output: default@parquet_schema_evolution_staging
+PREHOOK: query: CREATE TABLE parquet_schema_evolution (
+    id int,
+    str string
+) PARTITIONED BY (part string)
+STORED AS PARQUET
+PREHOOK: type: CREATETABLE
+PREHOOK: Output: database:default
+POSTHOOK: query: CREATE TABLE parquet_schema_evolution (
+    id int,
+    str string
+) PARTITIONED BY (part string)
+STORED AS PARQUET
+POSTHOOK: type: CREATETABLE
+POSTHOOK: Output: database:default
+POSTHOOK: Output: default@parquet_schema_evolution
+PREHOOK: query: LOAD DATA LOCAL INPATH '../../data/files/parquet_partitioned.txt' OVERWRITE INTO TABLE parquet_schema_evolution_staging
+PREHOOK: type: LOAD
+#### A masked pattern was here ####
+PREHOOK: Output: default@parquet_schema_evolution_staging
+POSTHOOK: query: LOAD DATA LOCAL INPATH '../../data/files/parquet_partitioned.txt' OVERWRITE INTO TABLE parquet_schema_evolution_staging
+POSTHOOK: type: LOAD
+#### A masked pattern was here ####
+POSTHOOK: Output: default@parquet_schema_evolution_staging
+PREHOOK: query: INSERT OVERWRITE TABLE parquet_schema_evolution PARTITION (part) SELECT * FROM parquet_schema_evolution_staging
+PREHOOK: type: QUERY
+PREHOOK: Input: default@parquet_schema_evolution_staging
+PREHOOK: Output: default@parquet_schema_evolution
+POSTHOOK: query: INSERT OVERWRITE TABLE parquet_schema_evolution PARTITION (part) SELECT * FROM parquet_schema_evolution_staging
+POSTHOOK: type: QUERY
+POSTHOOK: Input: default@parquet_schema_evolution_staging
+POSTHOOK: Output: default@parquet_schema_evolution@part=part1
+POSTHOOK: Output: default@parquet_schema_evolution@part=part2
+POSTHOOK: Lineage: parquet_schema_evolution PARTITION(part=part1).id SIMPLE [(parquet_schema_evolution_staging)parquet_schema_evolution_staging.FieldSchema(name:id, type:int, comment:null), ]
+POSTHOOK: Lineage: parquet_schema_evolution PARTITION(part=part1).str SIMPLE [(parquet_schema_evolution_staging)parquet_schema_evolution_staging.FieldSchema(name:str, type:string, comment:null), ]
+POSTHOOK: Lineage: parquet_schema_evolution PARTITION(part=part2).id SIMPLE [(parquet_schema_evolution_staging)parquet_schema_evolution_staging.FieldSchema(name:id, type:int, comment:null), ]
+POSTHOOK: Lineage: parquet_schema_evolution PARTITION(part=part2).str SIMPLE [(parquet_schema_evolution_staging)parquet_schema_evolution_staging.FieldSchema(name:str, type:string, comment:null), ]
+PREHOOK: query: ALTER TABLE parquet_schema_evolution ADD COLUMNS (new string)
+PREHOOK: type: ALTERTABLE_ADDCOLS
+PREHOOK: Input: default@parquet_schema_evolution
+PREHOOK: Output: default@parquet_schema_evolution
+POSTHOOK: query: ALTER TABLE parquet_schema_evolution ADD COLUMNS (new string)
+POSTHOOK: type: ALTERTABLE_ADDCOLS
+POSTHOOK: Input: default@parquet_schema_evolution
+POSTHOOK: Output: default@parquet_schema_evolution
+POSTHOOK: Lineage: parquet_schema_evolution PARTITION(part=part1).id SIMPLE [(parquet_schema_evolution_staging)parquet_schema_evolution_staging.FieldSchema(name:id, type:int, comment:null), ]
+POSTHOOK: Lineage: parquet_schema_evolution PARTITION(part=part1).str SIMPLE [(parquet_schema_evolution_staging)parquet_schema_evolution_staging.FieldSchema(name:str, type:string, comment:null), ]
+POSTHOOK: Lineage: parquet_schema_evolution PARTITION(part=part2).id SIMPLE [(parquet_schema_evolution_staging)parquet_schema_evolution_staging.FieldSchema(name:id, type:int, comment:null), ]
+POSTHOOK: Lineage: parquet_schema_evolution PARTITION(part=part2).str SIMPLE [(parquet_schema_evolution_staging)parquet_schema_evolution_staging.FieldSchema(name:str, type:string, comment:null), ]
+PREHOOK: query: SELECT new FROM parquet_schema_evolution WHERE part='part1'
+PREHOOK: type: QUERY
+PREHOOK: Input: default@parquet_schema_evolution
+PREHOOK: Input: default@parquet_schema_evolution@part=part1
+#### A masked pattern was here ####
+POSTHOOK: query: SELECT new FROM parquet_schema_evolution WHERE part='part1'
+POSTHOOK: type: QUERY
+POSTHOOK: Input: default@parquet_schema_evolution
+POSTHOOK: Input: default@parquet_schema_evolution@part=part1
+#### A masked pattern was here ####
+POSTHOOK: Lineage: parquet_schema_evolution PARTITION(part=part1).id SIMPLE [(parquet_schema_evolution_staging)parquet_schema_evolution_staging.FieldSchema(name:id, type:int, comment:null), ]
+POSTHOOK: Lineage: parquet_schema_evolution PARTITION(part=part1).str SIMPLE [(parquet_schema_evolution_staging)parquet_schema_evolution_staging.FieldSchema(name:str, type:string, comment:null), ]
+POSTHOOK: Lineage: parquet_schema_evolution PARTITION(part=part2).id SIMPLE [(parquet_schema_evolution_staging)parquet_schema_evolution_staging.FieldSchema(name:id, type:int, comment:null), ]
+POSTHOOK: Lineage: parquet_schema_evolution PARTITION(part=part2).str SIMPLE [(parquet_schema_evolution_staging)parquet_schema_evolution_staging.FieldSchema(name:str, type:string, comment:null), ]
+NULL
+PREHOOK: query: DROP TABLE parquet_schema_evolution_staging
+PREHOOK: type: DROPTABLE
+PREHOOK: Input: default@parquet_schema_evolution_staging
+PREHOOK: Output: default@parquet_schema_evolution_staging
+POSTHOOK: query: DROP TABLE parquet_schema_evolution_staging
+POSTHOOK: type: DROPTABLE
+POSTHOOK: Input: default@parquet_schema_evolution_staging
+POSTHOOK: Output: default@parquet_schema_evolution_staging
+POSTHOOK: Lineage: parquet_schema_evolution PARTITION(part=part1).id SIMPLE [(parquet_schema_evolution_staging)parquet_schema_evolution_staging.FieldSchema(name:id, type:int, comment:null), ]
+POSTHOOK: Lineage: parquet_schema_evolution PARTITION(part=part1).str SIMPLE [(parquet_schema_evolution_staging)parquet_schema_evolution_staging.FieldSchema(name:str, type:string, comment:null), ]
+POSTHOOK: Lineage: parquet_schema_evolution PARTITION(part=part2).id SIMPLE [(parquet_schema_evolution_staging)parquet_schema_evolution_staging.FieldSchema(name:id, type:int, comment:null), ]
+POSTHOOK: Lineage: parquet_schema_evolution PARTITION(part=part2).str SIMPLE [(parquet_schema_evolution_staging)parquet_schema_evolution_staging.FieldSchema(name:str, type:string, comment:null), ]
+PREHOOK: query: DROP TABLE parquet_schema_evolution
+PREHOOK: type: DROPTABLE
+PREHOOK: Input: default@parquet_schema_evolution
+PREHOOK: Output: default@parquet_schema_evolution
+POSTHOOK: query: DROP TABLE parquet_schema_evolution
+POSTHOOK: type: DROPTABLE
+POSTHOOK: Input: default@parquet_schema_evolution
+POSTHOOK: Output: default@parquet_schema_evolution
+POSTHOOK: Lineage: parquet_schema_evolution PARTITION(part=part1).id SIMPLE [(parquet_schema_evolution_staging)parquet_schema_evolution_staging.FieldSchema(name:id, type:int, comment:null), ]
+POSTHOOK: Lineage: parquet_schema_evolution PARTITION(part=part1).str SIMPLE [(parquet_schema_evolution_staging)parquet_schema_evolution_staging.FieldSchema(name:str, type:string, comment:null), ]
+POSTHOOK: Lineage: parquet_schema_evolution PARTITION(part=part2).id SIMPLE [(parquet_schema_evolution_staging)parquet_schema_evolution_staging.FieldSchema(name:id, type:int, comment:null), ]
+POSTHOOK: Lineage: parquet_schema_evolution PARTITION(part=part2).str SIMPLE [(parquet_schema_evolution_staging)parquet_schema_evolution_staging.FieldSchema(name:str, type:string, comment:null), ]
